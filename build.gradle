@@ -1,0 +1,16 @@
+defaultTasks 'test'
+
+def sourceDirectories = files('main', 'test')
+
+task test(type: Exec) {
+    def testScript = file('test/all_test.py')
+
+    commandLine 'python', testScript.absolutePath
+    environment.put "PYTHONPATH", sourceDirectories.asPath
+}
+
+task check_style(type: Exec) {
+    args '--show-source', '--show-pep8'
+    args sourceDirectories.collect { it.getAbsolutePath() }
+    executable 'pep8'
+}

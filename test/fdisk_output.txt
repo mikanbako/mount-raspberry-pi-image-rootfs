@@ -1,0 +1,10 @@
+Disk /dev/loop0: 1939 MB, 1939865600 bytes
+255 heads, 63 sectors/track, 235 cylinders, total 3788800 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000c7b31
+
+      Device Boot      Start         End      Blocks   Id  System
+/dev/loop0p1            8192      122879       57344    c  W95 FAT32 (LBA)
+/dev/loop0p2          122880     3788799     1832960   83  Linux
