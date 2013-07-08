@@ -26,8 +26,12 @@
 # This script launches other test scripts.
 
 import os.path
+import sys
 import unittest
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(
+    result = unittest.TextTestRunner().run(
         unittest.defaultTestLoader.discover(os.path.dirname(__file__)))
+
+    if not result.wasSuccessful():
+        sys.exit(1)
