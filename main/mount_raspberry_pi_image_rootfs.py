@@ -28,21 +28,14 @@
 
 import argparse
 import os.path
-import re
 import subprocess
 import sys
+
+import fdisk_output_parser
 
 
 class CannotDetectOffsetError(Exception):
     pass
-
-
-# Patterns for fdisk output.
-FDISK_OUTPUT_UNIT_PATTERN = re.compile(ur'^Units.+?(?P<bytes>\d+)\s+bytes$')
-FDISK_OUTPUT_PARTITION_LIST_HEADER_PATTERN = re.compile(
-    ur'^\s+Device\s+Boot\s+Start\s+.+$')
-FDISK_OUTPUT_ROOT_FILESYSTEM_START_INDEX_PATTERN = re.compile(
-    ur'^\S+\s+(?P<start_unit_index>\d+)\s+\d+\s+\d+\s+\d+\s+Linux$')
 
 
 def detect_root_filesystem_offset(fdisk_output):
@@ -57,43 +50,20 @@ def detect_root_filesystem_offset(fdisk_output):
     Return:
         Offset bytes of the root filesystem.
     '''
-    # Offset detection is composed of the below phases.
-    UNIT_DETECTION_PHASE = 0
-    PARTITION_LIST_DETECTION_PHASE = 1
-    ROOT_FILESYSTEM_START_INDEX_DETECTION_PHASE = 2
-    COMPLETE_PHASE = 3
+    # Get partitions.
 
-    # Parse the output of fdisk.
-    # This process assumes that the version of fdisk is util-linux 2.20.1.
-
-    current_phase = UNIT_DETECTION_PHASE
-    for line in fdisk_output.splitlines():
-        if current_phase == UNIT_DETECTION_PHASE:
-            match = FDISK_OUTPUT_UNIT_PATTERN.match(line)
-            if match:
-                bytes_par_unit = int(match.group(u'bytes'))
-                current_phase = PARTITION_LIST_DETECTION_PHASE
-        elif current_phase == PARTITION_LIST_DETECTION_PHASE:
-            match = FDISK_OUTPUT_PARTITION_LIST_HEADER_PATTERN.match(line)
-            if match:
-                current_phase = ROOT_FILESYSTEM_START_INDEX_DETECTION_PHASE
-            pass
-        elif current_phase == ROOT_FILESYSTEM_START_INDEX_DETECTION_PHASE:
-            match = FDISK_OUTPUT_ROOT_FILESYSTEM_START_INDEX_PATTERN.match(
-                line)
-            if match:
-                start_offset_unit = int(match.group(u'start_unit_index'))
-                current_phase = COMPLETE_PHASE
-                break
-
-    # Check the detection is complete.
-
-    if current_phase != COMPLETE_PHASE:
+    try:
+        image_partitions = fdisk_output_parser.detect_partitions(fdisk_output)
+    except fdisk_output_parser.ParseError:
         raise CannotDetectOffsetError()
 
-    # Calculate offset bytes for the root file system.
+    # Get the offset of the root file system.
 
-    return bytes_par_unit * start_offset_unit
+    for partition in image_partitions:
+        if partition.system == u'Linux':
+            return partition.start_offset_bytes
+    else:
+        raise CannotDetectOffsetError()
 
 
 def detatch_loopback_device(loopback_device_file):

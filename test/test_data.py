@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # The MIT License (MIT)
 #
 # Copyright (c) 2013 Keita Kita
@@ -22,31 +21,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# This script tests detecting the root filesystem from an output of fdisk.
+# This module defines constants for test.
 
-import unittest
+import os.path
 
-import mount_raspberry_pi_image_rootfs
-import test_data
-
-
-class TestDetectRootFilesystem(unittest.TestCase):
-    def testValidOutput(self):
-        u'''
-        Test that offset byte is (unit byte) * (offset unit) when
-        the output of fdisk is valid.
-        '''
-        with open(test_data.FDISK_OUTPUT_FILE) as f:
-            offset = mount_raspberry_pi_image_rootfs.\
-                detect_root_filesystem_offset(f.read())
-
-        self.assertEqual(512 * 122880, offset)
-
-    def testInvalidOutput(self):
-        u'''
-        Test that CannotDetectOffsetError raises when the output of fdisk is
-        invalid.
-        '''
-        with self.assertRaises(
-                mount_raspberry_pi_image_rootfs.CannotDetectOffsetError):
-            mount_raspberry_pi_image_rootfs.detect_root_filesystem_offset("")
+FDISK_OUTPUT_FILE = os.path.join(
+    os.path.dirname(__file__), u'fdisk_output.txt')
