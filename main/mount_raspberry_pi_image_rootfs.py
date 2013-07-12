@@ -66,7 +66,7 @@ def detect_root_filesystem_offset(fdisk_output):
         raise CannotDetectOffsetError()
 
 
-def detatch_loopback_device(loopback_device_file):
+def detach_loopback_device(loopback_device_file):
     subprocess.call(['losetup', '-d', loopback_device_file])
 
 
@@ -109,12 +109,12 @@ def main(image_file, loopback_device_file, mount_point):
         offset = detect_root_filesystem_offset(fdisk_output)
     except subprocess.CalledProcessError, e:
         print >>sys.stderr, e
-        detatch_loopback_device(loopback_device_file)
+        detach_loopback_device(loopback_device_file)
         sys.exit(1)
     except CannotDetectOffsetError:
         print >>sys.stderr, \
             "The offset of the root filesystem cannot be detected."
-        detatch_loopback_device(loopback_device_file)
+        detach_loopback_device(loopback_device_file)
         sys.exit(1)
 
     # Mount the partition of the root filesystem.
@@ -128,7 +128,7 @@ def main(image_file, loopback_device_file, mount_point):
             stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError, e:
         print >>sys.stderr, e
-        detatch_loopback_device(loopback_device_file)
+        detach_loopback_device(loopback_device_file)
         sys.exit(1)
 
     # Complete.
