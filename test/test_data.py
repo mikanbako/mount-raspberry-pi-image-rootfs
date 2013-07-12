@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # The MIT License (MIT)
 #
 # Copyright (c) 2013 Keita Kita
@@ -22,16 +21,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
-# This script launches other test scripts.
+# This module defines constants for test.
 
 import os.path
-import sys
-import unittest
 
-if __name__ == '__main__':
-    result = unittest.TextTestRunner().run(
-        unittest.defaultTestLoader.discover(os.path.dirname(__file__)))
-
-    if not result.wasSuccessful():
-        sys.exit(1)
+FDISK_OUTPUT_FILE = os.path.join(
+    os.path.dirname(__file__), u'fdisk_output.txt')

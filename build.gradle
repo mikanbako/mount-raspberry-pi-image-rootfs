@@ -2,15 +2,21 @@ defaultTasks 'test'
 
 def sourceDirectories = files('main', 'test')
 
-task test(type: Exec) {
+task check_syntax(type: Exec) {
+    executable 'python'
+    args '-3', '-m', 'compileall'
+    args sourceDirectories.collect { it.getAbsolutePath() }
+}
+
+task test(type: Exec, dependsOn: 'check_syntax') {
     def testScript = file('test/all_test.py')
 
-    commandLine 'python', testScript.absolutePath
+    commandLine 'python', '-3', testScript.absolutePath
     environment.put "PYTHONPATH", sourceDirectories.asPath
 }
 
-task check_style(type: Exec) {
+task check_style(type: Exec, dependsOn: 'check_syntax') {
+    executable 'pep8'
     args '--show-source', '--show-pep8'
     args sourceDirectories.collect { it.getAbsolutePath() }
-    executable 'pep8'
 }

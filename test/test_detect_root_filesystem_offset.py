@@ -24,10 +24,10 @@
 
 # This script tests detecting the root filesystem from an output of fdisk.
 
-import os.path
 import unittest
 
 import mount_raspberry_pi_image_rootfs
+import test_data
 
 
 class TestDetectRootFilesystem(unittest.TestCase):
@@ -36,10 +36,7 @@ class TestDetectRootFilesystem(unittest.TestCase):
         Test that offset byte is (unit byte) * (offset unit) when
         the output of fdisk is valid.
         '''
-        FDISK_OUTPUT_FILE = os.path.join(
-            os.path.dirname(__file__), u'fdisk_output.txt')
-
-        with open(FDISK_OUTPUT_FILE) as f:
+        with open(test_data.FDISK_OUTPUT_FILE) as f:
             offset = mount_raspberry_pi_image_rootfs.\
                 detect_root_filesystem_offset(f.read())
 
