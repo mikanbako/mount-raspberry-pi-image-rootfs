@@ -71,9 +71,8 @@ class Partition:
         return self.__end_unit_index
 
     @property
-    def partition_size_bytes(self):
-        return (self.end_unit_index - self.start_unit_index) * \
-            self.bytes_par_unit
+    def end_offset_bytes(self):
+        return self.end_unit_index * self.bytes_par_unit
 
     @property
     def system(self):

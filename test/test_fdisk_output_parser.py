@@ -40,8 +40,8 @@ class TestCalculatedPartitionValues(unittest.TestCase):
     def testStartOffsetBytes(self):
         self.assertEqual(1 * 512, self.__target.start_offset_bytes)
 
-    def testPartitionSizeBytes(self):
-        self.assertEquals((3 - 1) * 512, self.__target.partition_size_bytes)
+    def testEndOffsetBytes(self):
+        self.assertEquals(3 * 512, self.__target.end_offset_bytes)
 
 
 class TestDetectingPartitions(unittest.TestCase):
